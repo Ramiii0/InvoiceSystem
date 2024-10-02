@@ -1,0 +1,39 @@
+{
+  "id": "3c1af7c5-1ebc-467b-b779-ccebfa8c71b7",
+  "template": "app",
+  "versions": {
+    "AbpFramework": "8.3.0",
+    "AbpStudio": "0.8.3"
+  },
+  "modules": {
+    "InvoiceSystem": {
+      "path": "InvoiceSystem.abpmdl"
+    }
+  },
+  "runProfiles": {
+    "Default": {
+      "path": "etc/abp-studio/run-profiles/Default.abprun.json"
+    }
+  },
+  "options": {
+    "httpRequests": {
+      "ignoredUrls": [
+        "^/metrics$"
+      ]
+    }
+  },
+  "creatingStudioConfiguration": {
+    "template": "app",
+    "createdAbpStudioVersion": "0.8.3",
+    "tiered": "false",
+    "uiFramework": "mvc",
+    "databaseProvider": "ef",
+    "databaseManagementSystem": "sqlserver",
+    "separateTenantSchema": "false",
+    "theme": "leptonx-lite",
+    "themeStyle": "",
+    "mobileFramework": "none",
+    "publicWebsite": "false",
+    "socialLogin": ""
+  }
+}

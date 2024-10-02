@@ -1,0 +1,89 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.Account": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.Identity": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "8.3.0",
+      "isInstalled": true
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "InvoiceSystem.Application": {
+      "path": "src/InvoiceSystem.Application/InvoiceSystem.Application.abppkg",
+      "folder": "src"
+    },
+    "InvoiceSystem.Application.Tests": {
+      "path": "test/InvoiceSystem.Application.Tests/InvoiceSystem.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "InvoiceSystem.Domain.Shared": {
+      "path": "src/InvoiceSystem.Domain.Shared/InvoiceSystem.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "InvoiceSystem.Application.Contracts": {
+      "path": "src/InvoiceSystem.Application.Contracts/InvoiceSystem.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "InvoiceSystem.HttpApi": {
+      "path": "src/InvoiceSystem.HttpApi/InvoiceSystem.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "InvoiceSystem.HttpApi.Client": {
+      "path": "src/InvoiceSystem.HttpApi.Client/InvoiceSystem.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "InvoiceSystem.Web": {
+      "path": "src/InvoiceSystem.Web/InvoiceSystem.Web.abppkg",
+      "folder": "src"
+    },
+    "InvoiceSystem.Web.Tests": {
+      "path": "test/InvoiceSystem.Web.Tests/InvoiceSystem.Web.Tests.abppkg",
+      "folder": "test"
+    },
+    "InvoiceSystem.EntityFrameworkCore.Tests": {
+      "path": "test/InvoiceSystem.EntityFrameworkCore.Tests/InvoiceSystem.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "InvoiceSystem.EntityFrameworkCore": {
+      "path": "src/InvoiceSystem.EntityFrameworkCore/InvoiceSystem.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "InvoiceSystem.TestBase": {
+      "path": "test/InvoiceSystem.TestBase/InvoiceSystem.TestBase.abppkg",
+      "folder": "test"
+    },
+    "InvoiceSystem.Domain.Tests": {
+      "path": "test/InvoiceSystem.Domain.Tests/InvoiceSystem.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "InvoiceSystem.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/InvoiceSystem.HttpApi.Client.ConsoleTestApp/InvoiceSystem.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "InvoiceSystem.DbMigrator": {
+      "path": "src/InvoiceSystem.DbMigrator/InvoiceSystem.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "InvoiceSystem.Domain": {
+      "path": "src/InvoiceSystem.Domain/InvoiceSystem.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}
