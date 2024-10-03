@@ -10,6 +10,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.ObjectMapping;
+using AutoMapper.Internal.Mappers;
 
 namespace InvoiceSystem.Products
 {
@@ -28,23 +29,28 @@ namespace InvoiceSystem.Products
             return ObjectMapper.Map<Product,ProductsDto>(insert);
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var product = await _productRepository.GetAsync(id);
+            if (product == null)
+            {
+                throw new Exception("Product Not Found");
+            }
+            await _productRepository.DeleteAsync(product);
         }
 
         public  async Task<ProductsDto> GetAsync(Guid id)
         {
-            var query = await _productRepository.WithDetailsAsync(a => a.ProductPricing,a=>a.ProductDiscount);
-         var   product = query.FirstOrDefault(x=>x.Id == id);
+            var product =  _productRepository.WithDetails(a => a.ProductPricing,a=>a.ProductDiscount).FirstOrDefault(x => x.Id == id);
+            //var   product = query.
             if (product == null)
             {
                 throw new Exception("Product Not Found");
             }
 
            
-
-            return ObjectMapper.Map<Product, ProductsDto>(product);
+            var data = ObjectMapper.Map<Product, ProductsDto>(product);
+            return data;
         }
 
         public async Task<PagedResultDto<ProductsDto>> GetListAsync(GetProductListDto input)
@@ -53,11 +59,13 @@ namespace InvoiceSystem.Products
             {
                 input.Sorting = input.Sorting = nameof(Product.CreationTime);
             }
-            var query = await _productRepository.GetQueryableAsync();
-            query = query.OrderBy(input.Sorting)
-                     .Where(x => x.ProductPricing != null); // Ensure related items are included
+           /* var query = await _productRepository.GetQueryableAsync();
+            query = query.OrderBy(input.Sorting)*/
+                    ; // Ensure related items are included
+            var query = await _productRepository.WithDetailsAsync(a => a.ProductPricing, a => a.ProductDiscount);
+            var product = query.OrderBy(input.Sorting).WhereIf(!input.Filter.IsNullOrWhiteSpace(), p => p.Name.Contains(input.Filter));
 
-            var invoices = await query
+            var invoices = await product
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount)
                 .ToListAsync();
@@ -70,9 +78,29 @@ namespace InvoiceSystem.Products
 
         }
 
-        public Task UpdateAsync(Guid id, UpdateProductDto input)
+        public async Task<ProductsDto> UpdateAsync(Guid id, UpdateProductDto input)
         {
-            throw new NotImplementedException();
+            var product = await _productRepository.GetAsync(id);
+            if (product == null)
+            {
+                throw new Exception("No Product with this id");
+            }
+            if (input.Name != null)
+            {
+                product.Name = input.Name;
+
+            }
+            if(input.Code != 0)
+            {
+                product.Code = input.Code; 
+            }
+            if (input.PartNo != 0)
+            {
+                product.PartNo = input.PartNo;
+            }
+            var insert = await _productRepository.UpdateAsync(product,autoSave : true);
+            return  ObjectMapper.Map<Product,ProductsDto>(insert);
+
         }
     }
 }

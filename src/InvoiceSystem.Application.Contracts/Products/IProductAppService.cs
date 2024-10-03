@@ -18,7 +18,7 @@ namespace InvoiceSystem.Products
 
         Task<ProductsDto> CreateAsync(CreateProductDto input);
 
-        Task UpdateAsync(Guid id, UpdateProductDto input);
+        Task<ProductsDto> UpdateAsync(Guid id, UpdateProductDto input);
 
         Task DeleteAsync(Guid id);
 

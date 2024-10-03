@@ -16,8 +16,7 @@ namespace InvoiceSystem.Invoices
         [JsonIgnore]
         public Invoice Invoice { get; set; }
         public Guid ProductId { get; set; }
-        [JsonIgnore]
-        public Product Product { get; set; }
+       
         public int Quantity { get; set; }
         public Guid PriceId { get; set; }
         public decimal Price { get; set; }

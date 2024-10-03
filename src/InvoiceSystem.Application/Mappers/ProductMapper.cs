@@ -15,6 +15,7 @@ namespace InvoiceSystem.Mappers
             CreateMap<Product,ProductsDto>();
             CreateMap<ProductsDto, Product>();
             CreateMap<CreateProductDto,Product>();
+            CreateMap<UpdateProductDto, Product>();
 
 
         }

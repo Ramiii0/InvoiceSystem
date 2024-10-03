@@ -33,6 +33,7 @@ public class InvoiceSystemDbContext :
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductPricing>  ProductsPricing { get; set; }
     public DbSet<ProductDiscount> ProductsDiscount { get; set; }
+    public DbSet<Discounts> Discounts { get; set; }
 
 
     #region Entities from the modules
@@ -102,7 +103,7 @@ public class InvoiceSystemDbContext :
         builder.Entity<InvoiceItems>(x =>
         {
             x.ToTable(InvoiceSystemConsts.DbTablePrefix + "InvoiceItems", InvoiceSystemConsts.DbSchema);
-            x.HasOne(a => a.Product).WithOne(i => i.InvoiceItem).HasForeignKey<InvoiceItems>(i => i.ProductId).OnDelete(DeleteBehavior.Restrict);
+            
             x.ConfigureByConvention();
             x.Property(a => a.Price).HasPrecision(16, 2);
             x.Property(a => a.TotalPrice).HasPrecision(16, 2);
@@ -131,6 +132,12 @@ public class InvoiceSystemDbContext :
             x.ToTable(InvoiceSystemConsts.DbTablePrefix + "ProductsDiscount", InvoiceSystemConsts.DbSchema);
             x.ConfigureByConvention();
             
+        });
+        builder.Entity<Discounts>(x =>
+        {
+            x.ToTable(InvoiceSystemConsts.DbTablePrefix + "Discounts", InvoiceSystemConsts.DbSchema);
+            x.ConfigureByConvention();
+
         });
 
         /* Configure your own tables/entities inside here */

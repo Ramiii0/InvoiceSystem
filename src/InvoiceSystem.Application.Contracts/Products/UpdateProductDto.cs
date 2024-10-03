@@ -8,7 +8,7 @@ namespace InvoiceSystem.Products
 {
     public class UpdateProductDto
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public int Code { get; set; }
         public int PartNo { get; set; }
     }
