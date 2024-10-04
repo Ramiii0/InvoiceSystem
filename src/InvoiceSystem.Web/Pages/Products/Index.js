@@ -17,7 +17,7 @@
                             {
                                 text: 'Delete',
                                 confirmMessage: function (data) {
-                                    return `Are you sure to delete the book ${data.record.name}?`;
+                                    return `Are you sure to delete the book ${ data.record.name }?`
                                 },
                                 action: function (data) {
                                     invoiceSystem.products.product
@@ -40,6 +40,13 @@
                                 // visible: abp.auth.isGranted('ABPClinics.Patients.Edit'),
                                 action: function (data) {
                                     AddDiscount.open({ id: data.record.id });
+                                }
+                            },
+                            {
+                                text: 'Add Price',
+                                // visible: abp.auth.isGranted('ABPClinics.Patients.Edit'),
+                                action: function (data) {
+                                    AddPrice.open({ id: data.record.id });
                                 }
                             }
 
@@ -80,8 +87,9 @@
     );
 
     var createModal = new abp.ModalManager(abp.appPath + 'Products/Create');
-var editModal = new abp.ModalManager(abp.appPath + 'Products/Edit');
-var AddDiscount = new abp.ModalManager(abp.appPath + 'Products/AddDiscount');
+    var editModal = new abp.ModalManager(abp.appPath + 'Products/Edit');
+    var AddDiscount = new abp.ModalManager(abp.appPath + 'Products/AddDiscount');
+    var AddPrice = new abp.ModalManager(abp.appPath + 'Products/AddPrice');
 
     createModal.onResult(function () {
         dataTable.ajax.reload();
@@ -92,9 +100,15 @@ var AddDiscount = new abp.ModalManager(abp.appPath + 'Products/AddDiscount');
     AddDiscount.onResult(function () {
         dataTable.ajax.reload();
     });
+    AddPrice.onResult(function () {
+        dataTable.ajax.reload();
+    });
 
     $('#NewProductButton').click(function (e) {
         e.preventDefault();
         createModal.open();
     });
 });
+
+
+

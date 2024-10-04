@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using static System.Net.Mime.MediaTypeNames;
@@ -25,7 +26,7 @@ namespace InvoiceSystem.Reports
             _discount = discount;
         }
 
-        public async Task<List<DiscountReportsDto>> GetDiscountsReport(DateFilter filter)
+        public async Task<PagedResultDto<DiscountReportsDto>> GetDiscountsReport(GetReportList filter)
         {
             var query = await _discount.GetListAsync();
             var discounts = query.Where(a => a.CreationTime >= filter.From && a.CreationTime <= filter.To);
@@ -53,14 +54,17 @@ namespace InvoiceSystem.Reports
                     newdiscount.DiscountDetails.Add(details);
                 }
                 discountlist.Add(newdiscount);
+               
 
                
             }
-            return discountlist;
+            var totalCount = discountlist.Count();
+            // return discountlist;
+            return new PagedResultDto<DiscountReportsDto>(totalCount, discountlist);
 
         }
 
-        public async Task<MonthlyEarningsDto> GetMonthlyEarningReport(DateFilter filter)
+        public async Task<MonthlyEarningsDto> GetMonthlyEarningReport(GetReportList filter)
         {
             if (filter.Month != 0)
             {
@@ -90,7 +94,7 @@ namespace InvoiceSystem.Reports
         }
         
 
-        public async Task<List<ItemSalesReportDto>> GetItemSalesReport(DateFilter filter)
+        public async Task<PagedResultDto<ItemSalesReportDto>> GetItemSalesReport(GetReportList filter)
         {
             var query = await _invoiceItemRepository.GetListAsync();
             var invoiceItems = query.Where( a=> a.CreationTime >= filter.From && a.CreationTime <= filter.To);
@@ -113,7 +117,11 @@ namespace InvoiceSystem.Reports
                 
 
             }
-            return productsSales;
+            var totalCount = productsSales.Count();
+
+            //return productsSales;
+            return new PagedResultDto<ItemSalesReportDto>(totalCount, productsSales);
+
 
         }
     }

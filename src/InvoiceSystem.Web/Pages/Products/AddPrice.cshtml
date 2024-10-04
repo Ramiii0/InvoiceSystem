@@ -1,0 +1,16 @@
+﻿@page
+@model InvoiceSystem.Web.Pages.Products.AddPriceModel
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="Price" asp-page="/Products/AddPrice">
+    <abp-modal>
+        <abp-modal-header title="Add price to this product"></abp-modal-header>
+        <abp-modal-body>
+            <abp-input asp-for="Id" />
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

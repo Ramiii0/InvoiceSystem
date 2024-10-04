@@ -60,6 +60,32 @@ public class InvoiceSystemMenuContributor : IMenuContributor
             )
         )
       );
+        context.Menu.AddItem(
+new ApplicationMenuItem(
+    "InvoiceSystem",
+    "Reports",
+    icon: "fas fa-sticky-note"
+).AddItem(
+    new ApplicationMenuItem(
+        "InvoiceSystem",
+        "Monthly Earing Report",
+        url: "/monthlyearingreport"
+    )
+).AddItem(
+    new ApplicationMenuItem(
+        "InvoiceSystem",
+        "Discount Report",
+        url: "/discountreport"
+    )
+).AddItem(
+    new ApplicationMenuItem(
+        "InvoiceSystem",
+        "Prodcut Sales Report",
+        url: "reports"
+    )
+)
+);
+
 
         //Administration
         var administration = context.Menu.GetAdministration();
