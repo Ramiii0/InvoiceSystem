@@ -12,10 +12,11 @@ namespace InvoiceSystem.Mappers
     {
         public ProductMapper() 
         {
-            CreateMap<Product,ProductsDto>();
+            CreateMap<Product, ProductsDto>();/*.ForMember(d => d.ProductDiscountDisount, op => op.MapFrom(sr => sr.ProductDiscount));*/
             CreateMap<ProductsDto, Product>();
             CreateMap<CreateProductDto,Product>();
             CreateMap<UpdateProductDto, Product>();
+            CreateMap<ProductsDto, UpdateProductDto>();
 
 
         }

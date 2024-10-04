@@ -1,0 +1,18 @@
+﻿@page
+
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@model InvoiceSystem.Web.Pages.Products.AddDiscountModel
+
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="Discount" asp-page="/Products/AddDiscount">
+    <abp-modal>
+        <abp-modal-header title="Add Discount to this product"></abp-modal-header>
+        <abp-modal-body>
+            <abp-input asp-for="Id" />
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

@@ -1,0 +1,19 @@
+﻿@page
+
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@model InvoiceSystem.Web.Pages.Invoices.EditModel
+
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="Invoice" asp-page="/Invoices/Edit">
+    <abp-modal>
+        <abp-modal-header title="Update"></abp-modal-header>
+        <abp-modal-body>
+            <abp-input asp-for="Id" />
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>
+

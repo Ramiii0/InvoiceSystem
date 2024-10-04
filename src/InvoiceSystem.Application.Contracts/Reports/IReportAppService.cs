@@ -8,7 +8,7 @@ namespace InvoiceSystem.Reports
 {
     public interface IReportAppService
     {
-        Task<MonthlyEarningsDto> GetMonthlyReport(DateFilter filter);
+        Task<MonthlyEarningsDto> GetMonthlyEarningReport(DateFilter filter);
         Task<List<DiscountReportsDto>> GetDiscountsReport(DateFilter filter);
         Task<List<ItemSalesReportDto>> GetItemSalesReport(DateFilter filter);
 

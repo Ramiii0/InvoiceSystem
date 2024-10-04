@@ -1,0 +1,28 @@
+﻿@page
+@using InvoiceSystem.Web.Pages.Invoices
+@model IndexModel
+@section scripts {
+    <abp-script src="/Pages/Invoices/Index.js" />
+}
+
+
+
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>InvoiceList</abp-card-title>
+            </abp-column>
+            <abp-column size-md="_6" class="text-end">
+                <abp-button id="NewInvoiceButton"
+                            text="New Invoice"
+                            icon="plus"
+                            button-type="Primary" />
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+
+    <abp-card-body>
+        <abp-table striped-rows="true" id="invoiceTable"></abp-table>
+    </abp-card-body>
+</abp-card>

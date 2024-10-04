@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Volo.Abp.Domain.Entities.Auditing;
 
-namespace InvoiceSystem.Products
+namespace InvoiceSystem.Reports
 {
-    public class Discounts : FullAuditedEntity<Guid>
+    public class DiscountDetails
     {
-        public Guid ProductId { get; set; }
         public int Discount {  get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+
     }
 }

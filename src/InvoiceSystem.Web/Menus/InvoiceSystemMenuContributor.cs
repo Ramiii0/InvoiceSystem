@@ -34,7 +34,32 @@ public class InvoiceSystemMenuContributor : IMenuContributor
                 order: 1
             )
         );
-
+        context.Menu.AddItem(
+  new ApplicationMenuItem(
+      "InvoiceSystem",
+      "Invoices",
+      icon: "fas fa-file-invoice-dollar"
+  ).AddItem(
+      new ApplicationMenuItem(
+          "AbpClinic.Patients",
+          "Invoicelist",
+          url: "/invoices"
+      )
+  )
+);
+        context.Menu.AddItem(
+        new ApplicationMenuItem(
+            "InvoiceSystem",
+            "Products",
+            icon: "fas fa-box"
+        ).AddItem(
+            new ApplicationMenuItem(
+                "AbpClinic.Patients",
+                "ProductsList",
+                url: "/products"
+            )
+        )
+      );
 
         //Administration
         var administration = context.Menu.GetAdministration();

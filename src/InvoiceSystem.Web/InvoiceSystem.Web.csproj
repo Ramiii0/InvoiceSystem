@@ -39,6 +39,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Pages\Invoices\Index.js" />
+    <None Remove="Pages\Products\Index.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="8.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />

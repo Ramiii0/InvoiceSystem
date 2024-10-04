@@ -10,5 +10,7 @@ namespace InvoiceSystem.Reports
     {
         public DateTime From { get; set; }
         public DateTime To { get; set; }
+        public int Month { get; set; }
+        public string? Productname { get; set; }
     }
 }

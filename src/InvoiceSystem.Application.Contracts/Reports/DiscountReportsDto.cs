@@ -12,7 +12,7 @@ namespace InvoiceSystem.Reports
     {
        public string ProductName { get; set; }
         public int NumberOfDiscount { get; set; }
-        public int DiscountDetails { get; set; }
+        public List<DiscountDetails> DiscountDetails { get; set; } = new List<DiscountDetails>();
 
     }
 }

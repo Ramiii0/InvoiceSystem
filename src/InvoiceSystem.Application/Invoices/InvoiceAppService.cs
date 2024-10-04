@@ -58,23 +58,30 @@ namespace InvoiceSystem.Invoices
                 input.Sorting = nameof(Invoice.CreationTime);
             }
             var query = await _invoiceRepository.GetQueryableAsync();
-            query = query.OrderBy(input.Sorting)
-                     .Where(x => x.InvoiceItems != null); // Ensure related items are included
+            query = query
+       .WhereIf(input.Filter != null, p => p.InvoiceNo == input.Filter)
+       .OrderBy(input.Sorting);
 
             var invoices = await query
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount)
                 .ToListAsync();
             var totalCount = input.Filter == null
-    ? await _invoiceRepository.CountAsync()
-    : await _invoiceRepository.CountAsync(
-        p => p.InvoiceNo == input.Filter);
+        ? await _invoiceRepository.CountAsync() 
+        : await _invoiceRepository.CountAsync(p => p.InvoiceNo == input.Filter);
             return new PagedResultDto<InvoiceDto>(totalCount, ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices));
         }
 
-        public Task UpdateAsync(Guid id, UpdateInvoiceDto input)
+        public async Task<InvoiceDto> UpdateAsync(Guid id, UpdateInvoiceDto input)
         {
-            throw new NotImplementedException();
+            var invoice = await _invoiceRepository.GetAsync(id);
+            if (invoice == null)
+            {
+                throw new Exception("Invoice was not found");
+            }
+            var maped = ObjectMapper.Map<UpdateInvoiceDto,Invoice>(input,invoice);
+            var updated= await _invoiceRepository.UpdateAsync(maped,autoSave:true);
+            return ObjectMapper.Map<Invoice,InvoiceDto>(updated);
         }
     }
 }

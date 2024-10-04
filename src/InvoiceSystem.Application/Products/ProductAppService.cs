@@ -49,8 +49,8 @@ namespace InvoiceSystem.Products
             }
 
            
-            var data = ObjectMapper.Map<Product, ProductsDto>(product);
-            return data;
+            return ObjectMapper.Map<Product, ProductsDto>(product);
+            
         }
 
         public async Task<PagedResultDto<ProductsDto>> GetListAsync(GetProductListDto input)
@@ -59,11 +59,9 @@ namespace InvoiceSystem.Products
             {
                 input.Sorting = input.Sorting = nameof(Product.CreationTime);
             }
-           /* var query = await _productRepository.GetQueryableAsync();
-            query = query.OrderBy(input.Sorting)*/
-                    ; // Ensure related items are included
+          
             var query = await _productRepository.WithDetailsAsync(a => a.ProductPricing, a => a.ProductDiscount);
-            var product = query.OrderBy(input.Sorting).WhereIf(!input.Filter.IsNullOrWhiteSpace(), p => p.Name.Contains(input.Filter));
+            var product = query.WhereIf(!input.Filter.IsNullOrWhiteSpace(), p => p.Name.Contains(input.Filter)).OrderBy(input.Sorting);
 
             var invoices = await product
                 .Skip(input.SkipCount)

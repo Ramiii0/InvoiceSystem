@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace InvoiceSystem.Reports
 {
@@ -29,33 +30,45 @@ namespace InvoiceSystem.Reports
             var query = await _discount.GetListAsync();
             var discounts = query.Where(a => a.CreationTime >= filter.From && a.CreationTime <= filter.To);
             var productslist = await _productrepo.GetListAsync();
+            productslist = productslist.WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname)).ToList();
             List<DiscountReportsDto> discountlist = new List<DiscountReportsDto>();
+            List<int> x = new List<int>();
             foreach (var product in productslist)
             {
                 var p =discounts.Where(x => x.ProductId == product.Id);
+                var newdiscount = new DiscountReportsDto()
+                {
+                    ProductName = product.Name,
+                    NumberOfDiscount = p.Count(),
+                  
+                };
                 foreach (var item in p)
                 {
-                    DiscountReportsDto discountReportsDto = new DiscountReportsDto()
+                    var details = new DiscountDetails()
                     {
-                        ProductName = product.Name,
-                        DiscountDetails = item.Discount,
-
+                        Discount = item.Discount,
+                        StartDate = item.StartDate,
+                        EndDate = item.EndDate,
                     };
-                    discountReportsDto.NumberOfDiscount=p.Count();
-                    discountlist.Add(discountReportsDto);
-
-
-
-
-
+                    newdiscount.DiscountDetails.Add(details);
                 }
+                discountlist.Add(newdiscount);
+
+               
             }
             return discountlist;
 
         }
 
-        public async Task<MonthlyEarningsDto> GetMonthlyReport(DateFilter filter)
+        public async Task<MonthlyEarningsDto> GetMonthlyEarningReport(DateFilter filter)
         {
+            if (filter.Month != 0)
+            {
+                int year = DateTime.Now.Year;
+                filter.From= new DateTime(year, filter.Month, 1);
+                filter.To = filter.From.AddMonths(1).AddDays(-1);
+            }
+
            var invoice = await _invoiceRepository.GetListAsync();
             var filteredData = invoice.Where(a => a.CreationTime >= filter.From && a.CreationTime <= filter.To);
             decimal totalAmount= 0;
@@ -82,6 +95,8 @@ namespace InvoiceSystem.Reports
             var query = await _invoiceItemRepository.GetListAsync();
             var invoiceItems = query.Where( a=> a.CreationTime >= filter.From && a.CreationTime <= filter.To);
             var productslist = await _productrepo.GetListAsync();
+            
+           productslist= productslist.WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname)).ToList();
             List<ItemSalesReportDto> productsSales = new List< ItemSalesReportDto>();
             foreach( var item in productslist)
             {

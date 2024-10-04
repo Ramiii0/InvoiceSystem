@@ -1,0 +1,27 @@
+﻿@page
+@model InvoiceSystem.Web.Pages.Products.IndexModel
+@section scripts {
+    <abp-script src="/Pages/Products/Index.js" />
+}
+
+
+
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>Products List</abp-card-title>
+            </abp-column>
+            <abp-column size-md="_6" class="text-end">
+                <abp-button id="NewProductButton"
+                            text="New Invoice"
+                            icon="plus"
+                            button-type="Primary" />
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+
+    <abp-card-body>
+        <abp-table striped-rows="true" id="productTable"></abp-table>
+    </abp-card-body>
+</abp-card>

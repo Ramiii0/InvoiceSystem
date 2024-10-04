@@ -60,7 +60,9 @@ namespace InvoiceSystem.InvoiceItem
             { 
                 throw new Exception("No invoiceItem with this id"); 
             }
-           await _invoiceItemRepository.DeleteAsync(invoiceitem);
+            await RemoveOtemFromInvoice(invoiceitem.InvoiceId, invoiceitem.TotalPrice, invoiceitem.TotalNet);
+            await _invoiceItemRepository.DeleteAsync(invoiceitem);
+           
         }
 
         public async Task<InvoiceItemsDto> GetAsync(Guid id)
@@ -145,12 +147,28 @@ namespace InvoiceSystem.InvoiceItem
             {
                 throw new Exception("no invoice found");
             }
-            invoice.InvoiceAmount = invoice.InvoiceAmount + price;
-            invoice.TotalDiscount = invoice.TotalDiscount + discount;
+            invoice.InvoiceAmount +=  price;
+            invoice.TotalDiscount += discount;
             invoice.NetAmount =invoice.InvoiceAmount - invoice.TotalDiscount;
             await _invoice.UpdateAsync(invoice,autoSave: true);
             
 
+
+
+        }
+        private async Task RemoveOtemFromInvoice(Guid id, decimal totalprice, decimal net)
+        {
+            var invoice = await _invoice.GetAsync(id);
+            if (invoice == null)
+            {
+                throw new Exception("no invoice found");
+            }
+            decimal discountValue= totalprice-net;
+            invoice.InvoiceAmount -=   totalprice;
+            invoice.TotalDiscount -=   discountValue;
+            invoice.NetAmount -=  net ;
+            await _invoice.UpdateAsync(invoice, autoSave: true);
+            
 
 
         }
