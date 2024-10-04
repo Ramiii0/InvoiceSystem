@@ -1,0 +1,29 @@
+﻿@page
+@model InvoiceSystem.Web.Pages.Reports.ProdcutSalesReportModel
+@{
+}
+@section scripts {
+    <abp-script src="/Pages/Reports/Index.js" />
+}
+
+
+
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>Products List</abp-card-title>
+            </abp-column>
+            <abp-column size-md="_6" class="text-end">
+                <abp-button id="print"
+                            text="Print"
+                            icon="plus"
+                            button-type="Primary" />
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+
+    <abp-card-body>
+        <abp-table striped-rows="true" id="productsalesTable"></abp-table>
+    </abp-card-body>
+</abp-card>

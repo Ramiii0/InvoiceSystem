@@ -69,7 +69,7 @@ new ApplicationMenuItem(
     new ApplicationMenuItem(
         "InvoiceSystem",
         "Monthly Earing Report",
-        url: "/monthlyearingreport"
+        url: "/Reports/monthlyearningreport"
     )
 ).AddItem(
     new ApplicationMenuItem(
@@ -79,9 +79,9 @@ new ApplicationMenuItem(
     )
 ).AddItem(
     new ApplicationMenuItem(
-        "InvoiceSystem",
+        "InvoiceSystem.Reports",
         "Prodcut Sales Report",
-        url: "reports"
+        url: "/Reports/prodcutsalesreport"
     )
 )
 );

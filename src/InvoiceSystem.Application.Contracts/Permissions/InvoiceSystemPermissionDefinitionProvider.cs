@@ -9,10 +9,17 @@ public class InvoiceSystemPermissionDefinitionProvider : PermissionDefinitionPro
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(InvoiceSystemPermissions.GroupName);
+        
 
         //Define your own permissions here. Example:
         //myGroup.AddPermission(InvoiceSystemPermissions.MyPermission1, L("Permission:MyPermission1"));
+
+        var Invoice = context.AddGroup(InvoiceSystemPermissions.GroupName, L("Permission:Invoice"));
+        var booksPermission = Invoice.AddPermission(InvoiceSystemPermissions.Invoices.Default, L("Permission:Invoices"));
+        booksPermission.AddChild(InvoiceSystemPermissions.Invoices.Create, L("Permission:Invoice.Create"));
+        booksPermission.AddChild(InvoiceSystemPermissions.Invoices.Edit, L("Permission:Invoice.Edit"));
+        booksPermission.AddChild(InvoiceSystemPermissions.Invoices.Delete, L("Permission:Invoice.Delete"));
+        booksPermission.AddChild(InvoiceSystemPermissions.Invoices.RestoreDelete, L("Permission:Invoice.RestoreDelete"));
     }
 
     private static LocalizableString L(string name)

@@ -4,6 +4,12 @@
     "AppName": "InvoiceSystem",
     "Menu:Home": "Home",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
-    "Welcome": "Welcome"
+    "Welcome": "Welcome",
+    "Permission:Invoice": "Invoice",
+    "Permission:Invoices": "Invoice Managment",
+    "Permission:Invoice.Create": "Creating new Invoice",
+    "Permission:Invoice.Edit": "Editing the Invoice",
+    "Permission:Invoice.Delete": "Deleting the Invoice",
+    "Permission:Invoice.RestoreDelete": "RestoreDelete"
   }
 }

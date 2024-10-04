@@ -19,6 +19,7 @@ namespace InvoiceSystem.Invoices
         Task<InvoiceDto> UpdateAsync(Guid id, UpdateInvoiceDto input);
 
         Task DeleteAsync(Guid id);
+      
 
     }
     

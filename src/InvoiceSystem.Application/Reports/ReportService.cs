@@ -73,8 +73,8 @@ namespace InvoiceSystem.Reports
                 filter.To = filter.From.AddMonths(1).AddDays(-1);
             }
 
-           var invoice = await _invoiceRepository.GetListAsync();
-            var filteredData = invoice.Where(a => a.CreationTime >= filter.From && a.CreationTime <= filter.To);
+           var filteredData = await _invoiceRepository.GetListAsync();
+            filteredData = filteredData.WhereIf(filter.From != default(DateTime), a=> a.CreationTime >= filter.From && a.CreationTime <= filter.To).ToList();
             decimal totalAmount= 0;
             decimal totalaDicsount = 0;
             decimal netAmount = 0;
@@ -96,8 +96,8 @@ namespace InvoiceSystem.Reports
 
         public async Task<PagedResultDto<ItemSalesReportDto>> GetItemSalesReport(GetReportList filter)
         {
-            var query = await _invoiceItemRepository.GetListAsync();
-            var invoiceItems = query.Where( a=> a.CreationTime >= filter.From && a.CreationTime <= filter.To);
+            var invoiceItems = await _invoiceItemRepository.GetListAsync();
+             invoiceItems = invoiceItems.WhereIf(filter.From !=default(DateTime), a=> a.CreationTime >= filter.From && a.CreationTime <= filter.To).ToList();
             var productslist = await _productrepo.GetListAsync();
             
            productslist= productslist.WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname)).ToList();

@@ -13,6 +13,9 @@ using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 using Microsoft.EntityFrameworkCore;
 using InvoiceSystem.Products;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.AspNetCore.Authorization;
+using InvoiceSystem.Permissions;
 
 namespace InvoiceSystem.Invoices
 {
@@ -23,6 +26,7 @@ namespace InvoiceSystem.Invoices
         {
             _invoiceRepository = repository;
         }
+        [Authorize(InvoiceSystemPermissions.Invoices.Create)]
         public async Task<InvoiceDto> CreateAsync(CreateInvoiceDto input)
         {
             var invoice = ObjectMapper.Map<CreateInvoiceDto, Invoice>(input);
@@ -30,7 +34,7 @@ namespace InvoiceSystem.Invoices
             return  ObjectMapper.Map< Invoice, InvoiceDto>(insert);
 
         }
-
+        [Authorize(InvoiceSystemPermissions.Invoices.Delete)]
         public async Task DeleteAsync(Guid id)
         {
             var invoice = await _invoiceRepository.FindAsync(id);
@@ -71,7 +75,7 @@ namespace InvoiceSystem.Invoices
         : await _invoiceRepository.CountAsync(p => p.InvoiceNo == input.Filter);
             return new PagedResultDto<InvoiceDto>(totalCount, ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices));
         }
-
+        [Authorize(InvoiceSystemPermissions.Invoices.Edit)]
         public async Task<InvoiceDto> UpdateAsync(Guid id, UpdateInvoiceDto input)
         {
             var invoice = await _invoiceRepository.GetAsync(id);
@@ -83,5 +87,6 @@ namespace InvoiceSystem.Invoices
             var updated= await _invoiceRepository.UpdateAsync(maped,autoSave:true);
             return ObjectMapper.Map<Invoice,InvoiceDto>(updated);
         }
+     
     }
 }
