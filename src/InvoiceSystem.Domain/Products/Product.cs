@@ -1,4 +1,6 @@
-﻿using InvoiceSystem.Invoices;
+﻿using InvoiceSystem.InvoiceItems;
+using InvoiceSystem.ProductDiscounts;
+using InvoiceSystem.ProductPricings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +17,11 @@ namespace InvoiceSystem.Products
         public int Code { get; set; }
         public int PartNo { get; set; }
         [JsonIgnore]
-        public InvoiceItems InvoiceItem { get; set; }
+        public InvoiceItem InvoiceItem { get; set; }
         [JsonIgnore]
-        public ProductPricing ProductPricing { get; set; }
+        public  List<ProductPricing> ProductPricing { get; set; }
         [JsonIgnore]
-        public ProductDiscount ProductDiscount { get; set; }
+        public List<ProductDiscount> ProductDiscount { get; set; }
 
     }
 }

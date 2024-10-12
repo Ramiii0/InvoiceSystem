@@ -16,6 +16,10 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using InvoiceSystem.Invoices;
 using InvoiceSystem.Products;
+using InvoiceSystem.ProductDiscounts;
+using InvoiceSystem.ProductPricings;
+using InvoiceSystem.InvoiceItems;
+
 
 namespace InvoiceSystem.EntityFrameworkCore;
 
@@ -29,11 +33,11 @@ public class InvoiceSystemDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
     public DbSet<Invoice> Invoices { get; set; }
-    public DbSet<InvoiceItems> InvoicesItems { get; set; }
+    public DbSet<InvoiceItem> InvoicesItems { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductPricing>  ProductsPricing { get; set; }
     public DbSet<ProductDiscount> ProductsDiscount { get; set; }
-    public DbSet<Discounts> Discounts { get; set; }
+    
 
 
     #region Entities from the modules
@@ -91,8 +95,8 @@ public class InvoiceSystemDbContext :
         builder.Entity<Invoice>(x=>
         {
             x.ToTable(InvoiceSystemConsts.DbTablePrefix + "Invoices", InvoiceSystemConsts.DbSchema);
-            x.HasMany(a => a.InvoiceItems).WithOne(i=>i.Invoice).HasForeignKey(i=>i.InvoiceId).OnDelete(DeleteBehavior.Restrict);
-          x. ConfigureByConvention();
+            x.HasMany(a => a.InvoiceItems).WithOne(i=>i.Invoice).HasForeignKey(i=>i.InvoiceId).OnDelete(DeleteBehavior.Cascade);
+            x. ConfigureByConvention();
             x.Property(a=>a.InvoiceAmount).HasPrecision(16,2);
             x.Property(a => a.TotalDiscount).HasPrecision(16, 2);
             x.Property(a => a.NetAmount).HasPrecision(16, 2);
@@ -100,7 +104,7 @@ public class InvoiceSystemDbContext :
 
 
         });
-        builder.Entity<InvoiceItems>(x =>
+        builder.Entity<InvoiceItem>(x =>
         {
             x.ToTable(InvoiceSystemConsts.DbTablePrefix + "InvoiceItems", InvoiceSystemConsts.DbSchema);
             
@@ -108,16 +112,18 @@ public class InvoiceSystemDbContext :
             x.Property(a => a.Price).HasPrecision(16, 2);
             x.Property(a => a.TotalPrice).HasPrecision(16, 2);
             x.Property(a => a.TotalNet).HasPrecision(16, 2);
-            x.Property(a => a.DiscountValue).HasPrecision(16, 2);
+            x.Property(a => a.TotalDiscount).HasPrecision(16, 2);
             x.Property(a => a.TotalNet).HasPrecision(16, 2);
 
         });
         builder.Entity<Product>(x =>
         {
             x.ToTable(InvoiceSystemConsts.DbTablePrefix + "Products", InvoiceSystemConsts.DbSchema);
-            x.HasOne(a => a.ProductPricing).WithOne(i => i.Product).HasForeignKey<ProductPricing>(i => i.ProductId).OnDelete(DeleteBehavior.Restrict);
-            x.HasOne(a => a.ProductDiscount).WithOne(i => i.Product).HasForeignKey<ProductDiscount>(i => i.ProductId).OnDelete(DeleteBehavior.Restrict);
+            x.HasMany(a => a.ProductPricing).WithOne(i => i.Product).HasForeignKey(i => i.ProductId).OnDelete(DeleteBehavior.Restrict);
+            x.HasMany(a => a.ProductDiscount).WithOne(i => i.Product).HasForeignKey(i => i.ProductId).OnDelete(DeleteBehavior.Restrict);
             x.ConfigureByConvention();
+            
+
 
         });
         builder.Entity<ProductPricing>(x =>
@@ -125,6 +131,7 @@ public class InvoiceSystemDbContext :
             x.ToTable(InvoiceSystemConsts.DbTablePrefix + "ProductsPricing", InvoiceSystemConsts.DbSchema);
             x.ConfigureByConvention();
             x.Property(a => a.Price).HasPrecision(16, 2);
+            x.OwnsOne(a => a.PriceDuration,Options => Options.ToJson());
 
         });
         builder.Entity<ProductDiscount>(x =>
@@ -133,12 +140,7 @@ public class InvoiceSystemDbContext :
             x.ConfigureByConvention();
             
         });
-        builder.Entity<Discounts>(x =>
-        {
-            x.ToTable(InvoiceSystemConsts.DbTablePrefix + "Discounts", InvoiceSystemConsts.DbSchema);
-            x.ConfigureByConvention();
-
-        });
+       
 
         /* Configure your own tables/entities inside here */
 

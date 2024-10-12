@@ -1,4 +1,5 @@
-﻿using InvoiceSystem.Invoices;
+﻿using InvoiceSystem.InvoiceItems;
+using InvoiceSystem.Invoices;
 using InvoiceSystem.Products;
 using System;
 using System.Collections.Generic;
@@ -12,55 +13,51 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace InvoiceSystem.Reports
 {
-    public class ReportService : ApplicationService,IReportAppService
-    {
-        private readonly IRepository<Invoice,Guid> _invoiceRepository;
-        private readonly IRepository<InvoiceItems, Guid> _invoiceItemRepository;
-        private readonly IRepository<Product, Guid> _productrepo;
-        private readonly IRepository<Discounts, Guid> _discount;
-        public ReportService(IRepository<Invoice, Guid> repository, IRepository<InvoiceItems, Guid> invoiceItemRepository, IRepository<Product, Guid> productrepo, IRepository<Discounts, Guid> discount)
+    public class ReportService : ApplicationService,IReportAppService 
+    { 
+        private readonly IInvoiceRepository _invoiceRepository;
+        private readonly IInvoiceItemRepository _invoiceItemRepository;
+       
+       
+        private readonly IProductRepository _productRepo;
+        public ReportService(IInvoiceRepository repository, IInvoiceItemRepository invoiceItemRepository,  IProductRepository productRepo)
         {
             _invoiceRepository = repository;
             _invoiceItemRepository = invoiceItemRepository;
-            _productrepo = productrepo;
-            _discount = discount;
+          
+           
+            _productRepo = productRepo;
         }
 
         public async Task<PagedResultDto<DiscountReportsDto>> GetDiscountsReport(GetReportList filter)
         {
-            var query = await _discount.GetListAsync();
-            var discounts = query.Where(a => a.CreationTime >= filter.From && a.CreationTime <= filter.To);
-            var productslist = await _productrepo.GetListAsync();
-            productslist = productslist.WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname)).ToList();
-            List<DiscountReportsDto> discountlist = new List<DiscountReportsDto>();
-            List<int> x = new List<int>();
-            foreach (var product in productslist)
-            {
-                var p =discounts.Where(x => x.ProductId == product.Id);
-                var newdiscount = new DiscountReportsDto()
-                {
-                    ProductName = product.Name,
-                    NumberOfDiscount = p.Count(),
-                  
-                };
-                foreach (var item in p)
-                {
-                    var details = new DiscountDetails()
-                    {
-                        Discount = item.Discount,
-                        StartDate = item.StartDate,
-                        EndDate = item.EndDate,
-                    };
-                    newdiscount.DiscountDetails.Add(details);
-                }
-                discountlist.Add(newdiscount);
-               
 
-               
+            var products = (await _productRepo.GetAll()).AsEnumerable()
+           .WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname));
+            if (filter.Productname == null && filter.From != DateTime.MinValue)
+            {
+                products= products
+                 .Where(p => p.ProductDiscount.Any(d => d.StartDate >= filter.From && d.EndDate <= filter.To));
             }
-            var totalCount = discountlist.Count();
-            // return discountlist;
-            return new PagedResultDto<DiscountReportsDto>(totalCount, discountlist);
+
+     var discouont = products.Select(x => new DiscountReportsDto 
+            { ProductName = x.Name,
+                NumberOfDiscount = x.ProductDiscount.Count,
+                DiscountDetails = x.ProductDiscount.Select(a=> new DiscountDetails
+                {
+                    Discount =a.Disount,
+                    StartDate = a.StartDate,
+                    EndDate = a.EndDate,
+
+                }).ToList()
+            }).ToList();
+            int totalCount = discouont.Count;
+            return new PagedResultDto<DiscountReportsDto>(totalCount, discouont); 
+
+
+
+
+           
 
         }
 
@@ -73,8 +70,9 @@ namespace InvoiceSystem.Reports
                 filter.To = filter.From.AddMonths(1).AddDays(-1);
             }
 
-           var filteredData = await _invoiceRepository.GetListAsync();
-            filteredData = filteredData.WhereIf(filter.From != default(DateTime), a=> a.CreationTime >= filter.From && a.CreationTime <= filter.To).ToList();
+            var filteredData = (await _invoiceRepository.GetListAsync()).AsEnumerable()
+            .WhereIf(filter.From != DateTime.MinValue, a => a.CreationTime >= filter.From && a.CreationTime <= filter.To).ToList();
+           
             decimal totalAmount= 0;
             decimal totalaDicsount = 0;
             decimal netAmount = 0;
@@ -96,31 +94,35 @@ namespace InvoiceSystem.Reports
 
         public async Task<PagedResultDto<ItemSalesReportDto>> GetItemSalesReport(GetReportList filter)
         {
-            var invoiceItems = await _invoiceItemRepository.GetListAsync();
-             invoiceItems = invoiceItems.WhereIf(filter.From !=default(DateTime), a=> a.CreationTime >= filter.From && a.CreationTime <= filter.To).ToList();
-            var productslist = await _productrepo.GetListAsync();
-            
-           productslist= productslist.WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname)).ToList();
-            List<ItemSalesReportDto> productsSales = new List< ItemSalesReportDto>();
-            foreach( var item in productslist)
+            /* var query = from product in await _productRepo.GetAll()
+                         join
+                         invoiceItem in await _invoiceItemRepository.GetListAsync() on product.Id equals invoiceItem.ProductId into InvoiceGroup
+                         select
+                         new { ProductName =product.Name,ProductId =product.Id, NUmberOfSales =InvoiceGroup.Count() };*/
+            var product=( await _productRepo.GetAll())
+                .AsEnumerable()
+                .WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname));
+         
+            var invoiceItem = (await _invoiceItemRepository.GetListAsync())
+                .AsEnumerable()
+                .WhereIf(filter.From != DateTime.MinValue && filter.To != DateTime.MinValue,
+                a => a.CreationTime >= filter.From && a.CreationTime <= filter.To);
+
+
+            var result = product.GroupJoin(invoiceItem, x => x.Id, z => z.ProductId, (p, i) => new ItemSalesReportDto
             {
-               var product= invoiceItems.Where(x => x.ProductId == item.Id);
-                
-                    var newProduct = new ItemSalesReportDto()
-                    {
-                        ProductId = item.Id,
-                        ProductName = item.Name,
-                        NumberOfSales = product.Count()
+                ProductName = p.Name,
+                ProductId = p.Id,
+                NumberOfSales = i.Sum(b => b.Quantity)
+            }).ToList();
+           
 
-                    };
-                    productsSales.Add(newProduct);
-                
 
-            }
-            var totalCount = productsSales.Count();
 
-            //return productsSales;
-            return new PagedResultDto<ItemSalesReportDto>(totalCount, productsSales);
+
+
+            return new PagedResultDto<ItemSalesReportDto>(result.Count, result);
+           
 
 
         }

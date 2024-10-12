@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using InvoiceSystem.InvoiceItems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +12,8 @@ namespace InvoiceSystem.Invoices
     public class InvoiceDto: FullAuditedEntityDto<Guid>
     {
         public string CustomerName { get; set; }
-     
+        public List<InvoiceItemsDto> Items { get; set; }
+
         public int InvoiceNo { get; set; }
         public DateTime InvoiceDate { get; set; }
         public decimal InvoiceAmount { get; set; }

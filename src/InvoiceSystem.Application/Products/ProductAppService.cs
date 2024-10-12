@@ -16,11 +16,12 @@ namespace InvoiceSystem.Products
 {
     public class  ProductAppService : ApplicationService, IProductAppService
     {
-        private readonly IRepository<Product, Guid> _productRepository;
-        public ProductAppService(IRepository<Product, Guid> repository)
+        private readonly IProductRepository _productRepository;
+       
+        public ProductAppService( IProductRepository productRepo)
         {
-            _productRepository = repository;
-            
+            _productRepository = productRepo;
+          
         }
         public async Task<ProductsDto> CreateAsync(CreateProductDto input)
         {
@@ -41,7 +42,7 @@ namespace InvoiceSystem.Products
 
         public  async Task<ProductsDto> GetAsync(Guid id)
         {
-            var product =  _productRepository.WithDetails(a => a.ProductPricing,a=>a.ProductDiscount).FirstOrDefault(x => x.Id == id);
+            var product = await _productRepository.GetProduct(id);
             //var   product = query.
             if (product == null)
             {
@@ -59,14 +60,15 @@ namespace InvoiceSystem.Products
             {
                 input.Sorting = input.Sorting = nameof(Product.CreationTime);
             }
-          
-            var query = await _productRepository.WithDetailsAsync(a => a.ProductPricing, a => a.ProductDiscount);
-            var product = query.WhereIf(!input.Filter.IsNullOrWhiteSpace(), p => p.Name.Contains(input.Filter)).OrderBy(input.Sorting);
 
-            var invoices = await product
+            var query = await _productRepository.GetAll();
+            var product = query.AsQueryable().WhereIf(!input.Filter.IsNullOrWhiteSpace(), p => p.Name.Contains(input.Filter)).OrderBy(input.Sorting);
+            //var product = query.Where(x=>x.Name == input.Filter).ToList();
+
+            var invoices =  product
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount)
-                .ToListAsync();
+                .ToList();
             var totalCount = input.Filter == null
     ? await _productRepository.CountAsync()
     : await _productRepository.CountAsync(

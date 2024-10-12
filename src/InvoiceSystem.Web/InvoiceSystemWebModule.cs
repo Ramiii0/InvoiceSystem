@@ -48,6 +48,8 @@ using Volo.Abp.Security.Claims;
 using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Studio.Client.AspNetCore;
 
+using InvoiceSystem.InvoiceItems;
+
 namespace InvoiceSystem.Web;
 
 [DependsOn(
@@ -138,6 +140,7 @@ public class InvoiceSystemWebModule : AbpModule
         {
             options.IsDynamicPermissionStoreEnabled = true;
         });
+        context.Services.AddTransient<IInvoiceItemsAppService, InvoiceItemAppService>();
     }
 
 

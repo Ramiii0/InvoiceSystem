@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using InvoiceSystem.Products;
-using InvoiceSystem.ProductsPricing;
+using InvoiceSystem.ProductPricings;
+
+using InvoiceSystem.ProductsPricings;
 using System;
 using System.Collections.Generic;
 using System.Linq;

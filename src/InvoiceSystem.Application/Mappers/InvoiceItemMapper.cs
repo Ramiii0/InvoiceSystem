@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using InvoiceSystem.InvoiceItem;
-using InvoiceSystem.Invoices;
+using InvoiceSystem.InvoiceItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +12,9 @@ namespace InvoiceSystem.Mappers
     {
         public InvoiceItemMapper()
         {
-            CreateMap<CreateInvoiceItemsDto, InvoiceItems>();
-            CreateMap<InvoiceItems, InvoiceItemsDto>();
-            CreateMap<UpdateInvoiceItemsDto, InvoiceItems>();
+            CreateMap<CreateInvoiceItemsDto, InvoiceItem>();
+            CreateMap<InvoiceItem, InvoiceItemsDto>();
+            CreateMap<UpdateInvoiceItemsDto, InvoiceItem>();
             
             
         }

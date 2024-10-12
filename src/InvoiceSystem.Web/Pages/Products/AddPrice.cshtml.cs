@@ -1,6 +1,7 @@
 
 using InvoiceSystem.Products;
-using InvoiceSystem.ProductsPricing;
+
+using InvoiceSystem.ProductsPricings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

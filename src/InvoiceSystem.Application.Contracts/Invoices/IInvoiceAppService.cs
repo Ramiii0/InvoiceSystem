@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace InvoiceSystem.Invoices
         Task<InvoiceDto> UpdateAsync(Guid id, UpdateInvoiceDto input);
 
         Task DeleteAsync(Guid id);
+        Task<InvoiceDto> FindByName(string name); 
       
 
     }

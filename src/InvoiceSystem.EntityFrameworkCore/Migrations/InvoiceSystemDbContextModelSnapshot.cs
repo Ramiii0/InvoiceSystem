@@ -113,10 +113,6 @@ namespace InvoiceSystem.Migrations
                     b.Property<Guid>("DiscountId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("DiscountValue")
-                        .HasPrecision(16, 2)
-                        .HasColumnType("decimal(16,2)");
-
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uniqueidentifier");
 
@@ -146,6 +142,10 @@ namespace InvoiceSystem.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TotalDiscount")
+                        .HasPrecision(16, 2)
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<decimal>("TotalNet")
                         .HasPrecision(16, 2)
@@ -316,8 +316,7 @@ namespace InvoiceSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.ToTable("AppProductsDiscount", (string)null);
                 });
@@ -366,8 +365,7 @@ namespace InvoiceSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.ToTable("AppProductsPricing", (string)null);
                 });
@@ -2265,8 +2263,8 @@ namespace InvoiceSystem.Migrations
             modelBuilder.Entity("InvoiceSystem.Products.ProductDiscount", b =>
                 {
                     b.HasOne("InvoiceSystem.Products.Product", "Product")
-                        .WithOne("ProductDiscount")
-                        .HasForeignKey("InvoiceSystem.Products.ProductDiscount", "ProductId")
+                        .WithMany("ProductDiscount")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -2276,9 +2274,33 @@ namespace InvoiceSystem.Migrations
             modelBuilder.Entity("InvoiceSystem.Products.ProductPricing", b =>
                 {
                     b.HasOne("InvoiceSystem.Products.Product", "Product")
-                        .WithOne("ProductPricing")
-                        .HasForeignKey("InvoiceSystem.Products.ProductPricing", "ProductId")
+                        .WithMany("ProductPricing")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsOne("InvoiceSystem.Products.PriceDuration", "PriceDuration", b1 =>
+                        {
+                            b1.Property<Guid>("ProductPricingId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("End")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime>("Start")
+                                .HasColumnType("datetime2");
+
+                            b1.HasKey("ProductPricingId");
+
+                            b1.ToTable("AppProductsPricing");
+
+                            b1.ToJson("PriceDuration");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductPricingId");
+                        });
+
+                    b.Navigation("PriceDuration")
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -2445,11 +2467,9 @@ namespace InvoiceSystem.Migrations
                     b.Navigation("InvoiceItem")
                         .IsRequired();
 
-                    b.Navigation("ProductDiscount")
-                        .IsRequired();
+                    b.Navigation("ProductDiscount");
 
-                    b.Navigation("ProductPricing")
-                        .IsRequired();
+                    b.Navigation("ProductPricing");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

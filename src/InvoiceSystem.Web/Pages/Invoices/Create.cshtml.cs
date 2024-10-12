@@ -20,7 +20,7 @@ namespace InvoiceSystem.Web.Pages.Invoices
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            await _invoiceAppService.CreateAsync(Invoice);
+           // await _invoiceAppService.CreateAsync(Invoice);
             return NoContent();
         }
     }

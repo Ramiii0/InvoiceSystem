@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using InvoiceSystem.InvoiceItems;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,10 +13,12 @@ namespace InvoiceSystem.Invoices
     {
         [StringLength(100)]
         public string CustomerName { get; set; }
-       
+       public List<CreateInvoiceItemsDto> invoiceItems {  get; set; }
 
-      
-       
-  
+
+
+
+
+
     }
 }

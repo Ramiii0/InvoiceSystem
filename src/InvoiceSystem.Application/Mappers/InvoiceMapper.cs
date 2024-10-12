@@ -12,7 +12,7 @@ namespace InvoiceSystem.Mappers
     {
         public InvoiceMapper()
         {
-            CreateMap<Invoice, InvoiceDto>();
+            CreateMap<Invoice, InvoiceDto>().ForMember(d =>d.Items,op=>op.MapFrom(src=>src.InvoiceItems));
             CreateMap<InvoiceDto, Invoice>();
             CreateMap<CreateInvoiceDto, InvoiceDto>();
             CreateMap<CreateInvoiceDto, Invoice>();
