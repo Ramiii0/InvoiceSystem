@@ -4,6 +4,7 @@ using InvoiceSystem.Products;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -73,20 +74,14 @@ namespace InvoiceSystem.Reports
             var filteredData = (await _invoiceRepository.GetListAsync()).AsEnumerable()
             .WhereIf(filter.From != DateTime.MinValue, a => a.CreationTime >= filter.From && a.CreationTime <= filter.To).ToList();
            
-            decimal totalAmount= 0;
-            decimal totalaDicsount = 0;
-            decimal netAmount = 0;
-            foreach(var item in filteredData)
-            {
-                totalAmount +=  item.InvoiceAmount;
-                totalaDicsount += item.TotalDiscount;
-            }
-            netAmount= totalAmount-totalaDicsount;
+            
+           var Invoice =filteredData.Select(x=> new {totaldiscount =x.TotalDiscount,totalamount = x.InvoiceAmount,netamount=x.NetAmount}).ToList();  
+           
             MonthlyEarningsDto response = new MonthlyEarningsDto()
             {
-                TotalAmounts = totalAmount,
-                TotalDiscounts = totalaDicsount,
-                NetAmount = netAmount
+                TotalAmounts = Invoice.Sum(x=>x.totalamount),
+                TotalDiscounts = Invoice.Sum(a=>a.totaldiscount),
+                NetAmount = Invoice.Sum(z=>z.netamount),
             };
             return response;
         }
@@ -94,11 +89,7 @@ namespace InvoiceSystem.Reports
 
         public async Task<PagedResultDto<ItemSalesReportDto>> GetItemSalesReport(GetReportList filter)
         {
-            /* var query = from product in await _productRepo.GetAll()
-                         join
-                         invoiceItem in await _invoiceItemRepository.GetListAsync() on product.Id equals invoiceItem.ProductId into InvoiceGroup
-                         select
-                         new { ProductName =product.Name,ProductId =product.Id, NUmberOfSales =InvoiceGroup.Count() };*/
+            
             var product=( await _productRepo.GetAll())
                 .AsEnumerable()
                 .WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname));

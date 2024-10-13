@@ -15,6 +15,10 @@ using Volo.Abp.ObjectMapping;
 
 using InvoiceSystem.InvoiceItems;
 using Volo.Abp.Users;
+using Volo.Abp.Data;
+using Volo.Abp;
+using InvoiceSystem.Permissions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InvoiceSystem.InvoiceItems
 {
@@ -24,14 +28,16 @@ namespace InvoiceSystem.InvoiceItems
        
         private readonly IInvoiceRepository _invoice;
         private readonly IProductRepository _productRepo;
+        private readonly IDataFilter _dataFilter;
 
-        public InvoiceItemAppService(IProductRepository productRepo, IInvoiceRepository invoice,  IInvoiceItemRepository invoiceItemRepository )
+        public InvoiceItemAppService(IProductRepository productRepo, IInvoiceRepository invoice,  IInvoiceItemRepository invoiceItemRepository, IDataFilter dataFilter)
         {
          
            
             _invoice = invoice;
             _productRepo = productRepo;
             _invoiceItemRepository = invoiceItemRepository;
+            _dataFilter = dataFilter;
         }
         public async Task CreateAsync(List<CreateInvoiceItemsDto> input, Guid invouceId)
         {
@@ -147,7 +153,25 @@ namespace InvoiceSystem.InvoiceItems
             var updated= await _invoiceItemRepository.UpdateAsync(invoiceitem,autoSave: true);
             return ObjectMapper.Map<InvoiceItem, InvoiceItemsDto>(updated);
         }
-        public  async Task  AddOrDeleteItemFromToInvoice (Guid id,decimal totalprice,decimal totaldiscount,decimal totalnet)
+        [Authorize(InvoiceSystemPermissions.Invoices.RestoreDelete)]
+        public async Task RestoreDelete(Guid id)
+        {
+            using (_dataFilter.Disable<ISoftDelete>())
+            {
+                var item = await _invoiceItemRepository.GetAsync(id);
+                if (item != null && item.IsDeleted )
+                {
+                    item.IsDeleted = false;
+                    await _invoiceItemRepository.UpdateAsync(item, autoSave: true);
+                    return;
+                }
+                
+                    throw new Exception();
+                
+             
+            }
+        }
+        private  async Task  AddOrDeleteItemFromToInvoice (Guid id,decimal totalprice,decimal totaldiscount,decimal totalnet)
         {
             var invoice = await _invoice.GetAsync(id);
             if (invoice == null)

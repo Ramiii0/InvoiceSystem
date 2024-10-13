@@ -19,6 +19,8 @@ using InvoiceSystem.Permissions;
 using System.Web.Http;
 using static InvoiceSystem.Permissions.InvoiceSystemPermissions;
 using InvoiceSystem.InvoiceItems;
+using Volo.Abp;
+using Volo.Abp.Data;
 
 namespace InvoiceSystem.Invoices
 {
@@ -29,12 +31,14 @@ namespace InvoiceSystem.Invoices
         private readonly IProductRepository _productRepo;
         private readonly IInvoiceItemRepository _invoiceItemRepository;
         private readonly IInvoiceItemsAppService _invoiceItemAppService;
-        public InvoiceAppService( IInvoiceRepository invoiceAppService, IProductRepository productRepo, IInvoiceItemRepository invoiceItemRepository, IInvoiceItemsAppService invoiceItemAppService)
+        private readonly IDataFilter _dataFilter;
+        public InvoiceAppService( IInvoiceRepository invoiceAppService, IProductRepository productRepo, IInvoiceItemRepository invoiceItemRepository, IInvoiceItemsAppService invoiceItemAppService,  IDataFilter dataFilter)
         {
             _invoiceRepository = invoiceAppService;
             _productRepo = productRepo;
             _invoiceItemRepository = invoiceItemRepository;
             _invoiceItemAppService = invoiceItemAppService;
+            _dataFilter = dataFilter;
         }
         //[Authorize(InvoiceSystemPermissions.Invoices.Create)]
         public async Task<InvoiceDto> CreateAsync(CreateInvoiceDto input)
@@ -46,14 +50,7 @@ namespace InvoiceSystem.Invoices
            
 
             await _invoiceItemAppService.CreateAsync(input.invoiceItems,insert.Id);
-            /*foreach (var item in input.invoiceItems)
-            {
-                CreateInvoiceItemsDto invoiceItems = item;
-                invoiceItems.InvoiceId= insert.Id;
-                //await AddItemsToInvoice(invoiceItems);
-             await   _invoiceItemAppService.CreateAsync(invoiceItems);
-
-            }*/
+            
             return ObjectMapper.Map<Invoice, InvoiceDto>(insert);
 
         }
@@ -108,42 +105,23 @@ namespace InvoiceSystem.Invoices
             var updated = await _invoiceRepository.UpdateAsync(maped, autoSave: true);
             return ObjectMapper.Map<Invoice, InvoiceDto>(updated);
         }
-       /* private async Task AddItemsToInvoice( CreateInvoiceItemsDto createInvoiceItemsDto)
+        public async Task RestoreDelete(Guid id)
         {
-            var product = await _productRepo.GetProduct(createInvoiceItemsDto.ProductId);
-            var mappedProduct = ObjectMapper.Map<Product, ProductsDto>(product);
-            var invoiceItem = ObjectMapper.Map<CreateInvoiceItemsDto, InvoiceItem>(createInvoiceItemsDto);
-            decimal totaldiscount = mappedProduct.DiscountDetails != null ?
-                (mappedProduct.PriceDetails.Price * mappedProduct.DiscountDetails.Discount / 100) * createInvoiceItemsDto.Quantity : 0;
-
-            var totalprice = invoiceItem.TotalPrice = mappedProduct.PriceDetails.Price * createInvoiceItemsDto.Quantity;
-            invoiceItem.PriceId = mappedProduct.PriceDetails.Id;
-            invoiceItem.Price = mappedProduct.PriceDetails.Price;
-            invoiceItem.DiscountId = mappedProduct.DiscountDetails != null ? mappedProduct.DiscountDetails.Id : default(Guid);
-            invoiceItem.TotalDiscount = totaldiscount;
-
-            decimal totalnet = invoiceItem.TotalNet = totalprice - totaldiscount;
-            await AddTotalPriceToInvoice(createInvoiceItemsDto.InvoiceId, totalprice, totaldiscount, totalnet);
-            var insert = await _invoiceItemRepository.InsertAsync(invoiceItem);
-        }*/
-       /* public async Task AddTotalPriceToInvoice(Guid id, decimal totalprice, decimal totaldiscount, decimal totalnet)
-        {
-            var invoice = await _invoiceRepository.GetAsync(id);
-            if (invoice == null)
+            using (_dataFilter.Disable<ISoftDelete>())
             {
-                throw new Exception("no invoice found");
+                var invoice = await _invoiceRepository.GetAsync(id);
+                if (invoice != null && invoice.IsDeleted)
+                {
+                    invoice.IsDeleted = false;
+                    await _invoiceRepository.UpdateAsync(invoice, autoSave: true);
+                    return;
+                }
+
+                throw new Exception();
+
+
             }
-
-            invoice.InvoiceAmount += totalprice;
-            invoice.TotalDiscount += totaldiscount;
-            invoice.NetAmount += totalnet;
-            await _invoiceRepository.UpdateAsync(invoice, autoSave: true);
-
-
-
-
-        }*/
-        
+        }
 
     } 
     
