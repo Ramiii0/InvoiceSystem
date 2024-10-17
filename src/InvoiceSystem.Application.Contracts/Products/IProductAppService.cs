@@ -12,13 +12,13 @@ namespace InvoiceSystem.Products
 {
     public interface IProductAppService : IApplicationService
     {
-        Task<ProductsDto> GetAsync(Guid id);
+        Task<ProductDto> GetAsync(Guid id);
 
-        Task<PagedResultDto<ProductsDto>> GetListAsync(GetProductListDto input);
+        Task<PagedResultDto<ProductDto>> GetListAsync(GetProductListDto input);
 
-        Task<ProductsDto> CreateAsync(CreateProductDto input);
+        Task<ProductDto> CreateAsync(CreateProductDto input);
 
-        Task<ProductsDto> UpdateAsync(Guid id, UpdateProductDto input);
+        Task<ProductDto> UpdateAsync(Guid id, UpdateProductDto input);
 
         Task DeleteAsync(Guid id);
 

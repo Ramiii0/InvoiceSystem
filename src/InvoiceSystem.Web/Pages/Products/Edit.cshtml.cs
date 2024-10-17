@@ -23,7 +23,7 @@ namespace InvoiceSystem.Web.Pages.Products
         public async void OnGet()
         {
             var dto= await _product.GetAsync(Id);
-            Product = ObjectMapper.Map<ProductsDto, UpdateProductDto>(dto);
+            Product = ObjectMapper.Map<ProductDto, UpdateProductDto>(dto);
         }
         public async Task<IActionResult> OnPostAsync()
         {

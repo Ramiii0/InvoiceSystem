@@ -13,7 +13,7 @@ namespace InvoiceSystem.Mappers
     {
         public ProductMapper() 
         {
-            CreateMap<Product, ProductsDto>().ForMember(dest => dest.PriceDetails,
+            CreateMap<Product, ProductDto>().ForMember(dest => dest.PriceDetails,
                opt => opt.MapFrom(src => src.ProductPricing
                                              .OrderByDescending(pp => pp.CreationTime)
                                              .Select(pp => new ProductPriceDto
@@ -34,10 +34,10 @@ namespace InvoiceSystem.Mappers
                                              })
                                              .FirstOrDefault()));
                /* .ForMember(d => d.ProductDiscount, op => op.MapFrom(src => src.ProductDiscount));*/
-            CreateMap<ProductsDto, Product>();
+            CreateMap<ProductDto, Product>();
             CreateMap<CreateProductDto,Product>();
             CreateMap<UpdateProductDto, Product>();
-            CreateMap<ProductsDto, UpdateProductDto>();
+            CreateMap<ProductDto, UpdateProductDto>();
 
 
         }

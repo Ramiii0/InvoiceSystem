@@ -42,7 +42,9 @@ namespace InvoiceSystem.InvoiceItems
         public async Task CreateAsync(List<CreateInvoiceItemsDto> input, Guid invouceId)
         {
             var productquery = await _productRepo.GetAll();
-            var products = ObjectMapper.Map<List<Product>, List<ProductsDto>>(productquery);
+            // mapping the productsList to get last price & duscount insted of all price & discount
+            var products = ObjectMapper.Map<List<Product>, List<ProductDto>>(productquery);
+
             var query = input.Join(products, x => x.ProductId, a => a.Id, (i, p) => new InvoiceItem
             {
                 Quantity = i.Quantity,
@@ -51,13 +53,9 @@ namespace InvoiceSystem.InvoiceItems
                 PriceId = p.PriceDetails.Id,
                 Price = p.PriceDetails.Price,
                 TotalPrice = p.PriceDetails.Price * i.Quantity,
-                DiscountId = p.DiscountDetails.Id,
+                DiscountId = p.DiscountDetails != null ?p.DiscountDetails.Id : Guid.Empty,
                 TotalDiscount = p.DiscountDetails != null ? (p.PriceDetails.Price * p.DiscountDetails.Discount / 100) * i.Quantity : 0,
                 TotalNet = (p.PriceDetails.Price * i.Quantity) - (p.DiscountDetails != null ? (p.PriceDetails.Price * p.DiscountDetails.Discount / 100) * i.Quantity : 0)
-
-
-
-
             }).ToList();
             await _invoiceItemRepository.InsertManyAsync(query, autoSave: true);
          await AddOrDeleteItemFromToInvoice(invouceId,query.Sum(x=>x.TotalPrice), query.Sum(x => x.TotalDiscount), query.Sum(x => x.TotalNet));
@@ -115,7 +113,8 @@ namespace InvoiceSystem.InvoiceItems
             {
                 throw new Exception("No invoiceItem with this id");
             }
-            if(input.InvoiceId != default(Guid))
+            var newinvoiceitem = ObjectMapper.Map<UpdateInvoiceItemsDto, InvoiceItem>(input,invoiceitem);
+            if (input.InvoiceId != default(Guid))
             {
                 invoiceitem.InvoiceId = input.InvoiceId;
 
@@ -125,7 +124,7 @@ namespace InvoiceSystem.InvoiceItems
             {
 
                 Guid p_id=invoiceitem.ProductId;
-                if(input.ProductId != default(Guid))
+                if(input.ProductId != Guid.Empty)
                 {
                     p_id= input.ProductId;
                     invoiceitem.ProductId = input.ProductId;
@@ -137,10 +136,8 @@ namespace InvoiceSystem.InvoiceItems
                 {
                     throw new Exception("There is no product with this Id");
                 }
-                var mappedObject = ObjectMapper.Map<Product, ProductsDto>(product);
+                var mappedObject = ObjectMapper.Map<Product, ProductDto>(product);
                 decimal discount = invoiceitem.TotalPrice * mappedObject.DiscountDetails.Discount / 100;
-
-
                 invoiceitem.PriceId = mappedObject.PriceDetails.Id;
                 invoiceitem.Price = mappedObject.PriceDetails.Price;
                 invoiceitem.DiscountId = mappedObject.DiscountDetails.Id;

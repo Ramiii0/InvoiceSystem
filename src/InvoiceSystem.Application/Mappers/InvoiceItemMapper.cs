@@ -13,10 +13,14 @@ namespace InvoiceSystem.Mappers
         public InvoiceItemMapper()
         {
             CreateMap<CreateInvoiceItemsDto, InvoiceItem>();
+                
             CreateMap<InvoiceItem, InvoiceItemsDto>();
-            CreateMap<UpdateInvoiceItemsDto, InvoiceItem>();
-            
-            
+            CreateMap<UpdateInvoiceItemsDto, InvoiceItem>()
+                .ForMember(x => x.ProductId, opt => opt.Condition(src => src.ProductId != Guid.Empty))
+                 .ForMember(x => x.InvoiceId, opt => opt.Condition(src => src.InvoiceId != Guid.Empty));
+
+
+
         }
     }
 }

@@ -9,7 +9,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace InvoiceSystem.Products
 {
-    public class ProductsDto : FullAuditedEntityDto<Guid>
+    public class ProductDto : FullAuditedEntityDto<Guid>
     {
         public string Name { get; set; }
         public int Code { get; set; }

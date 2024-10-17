@@ -3,6 +3,7 @@ using InvoiceSystem.Invoices;
 using InvoiceSystem.Products;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -37,21 +38,24 @@ namespace InvoiceSystem.Reports
            .WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname));
             if (filter.Productname == null && filter.From != DateTime.MinValue)
             {
-                products= products
+                products = products
                  .Where(p => p.ProductDiscount.Any(d => d.StartDate >= filter.From && d.EndDate <= filter.To));
             }
+           
 
-     var discouont = products.Select(x => new DiscountReportsDto 
-            { ProductName = x.Name,
+            var discouont = products.Select(x => new DiscountReportsDto
+            {
+                ProductName = x.Name,
                 NumberOfDiscount = x.ProductDiscount.Count,
-                DiscountDetails = x.ProductDiscount.Select(a=> new DiscountDetails
+                DiscountDetails = x.ProductDiscount.Select(a => new DiscountDetails
                 {
-                    Discount =a.Disount,
+                    Discount = a.Disount,
                     StartDate = a.StartDate,
                     EndDate = a.EndDate,
 
                 }).ToList()
             }).ToList();
+            
             int totalCount = discouont.Count;
             return new PagedResultDto<DiscountReportsDto>(totalCount, discouont); 
 
@@ -89,15 +93,17 @@ namespace InvoiceSystem.Reports
 
         public async Task<PagedResultDto<ItemSalesReportDto>> GetItemSalesReport(GetReportList filter)
         {
+           
             
-            var product=( await _productRepo.GetAll())
+            var product=( await _productRepo.GetAll()).AsParallel()
                 .AsEnumerable()
                 .WhereIf(!filter.Productname.IsNullOrWhiteSpace(), p => p.Name.Contains(filter.Productname));
          
             var invoiceItem = (await _invoiceItemRepository.GetListAsync())
-                .AsEnumerable()
+                .AsEnumerable().AsParallel()
                 .WhereIf(filter.From != DateTime.MinValue && filter.To != DateTime.MinValue,
                 a => a.CreationTime >= filter.From && a.CreationTime <= filter.To);
+
 
 
             var result = product.GroupJoin(invoiceItem, x => x.Id, z => z.ProductId, (p, i) => new ItemSalesReportDto
@@ -105,8 +111,9 @@ namespace InvoiceSystem.Reports
                 ProductName = p.Name,
                 ProductId = p.Id,
                 NumberOfSales = i.Sum(b => b.Quantity)
-            }).ToList();
-           
+            }).AsParallel().ToList();
+          
+
 
 
 

@@ -23,11 +23,11 @@ namespace InvoiceSystem.Products
             _productRepository = productRepo;
           
         }
-        public async Task<ProductsDto> CreateAsync(CreateProductDto input)
+        public async Task<ProductDto> CreateAsync(CreateProductDto input)
         {
             var product = ObjectMapper.Map<CreateProductDto, Product>(input);
            var insert= await _productRepository.InsertAsync(product);
-            return ObjectMapper.Map<Product,ProductsDto>(insert);
+            return ObjectMapper.Map<Product,ProductDto>(insert);
         }
 
         public async Task DeleteAsync(Guid id)
@@ -40,7 +40,7 @@ namespace InvoiceSystem.Products
             await _productRepository.DeleteAsync(product);
         }
 
-        public  async Task<ProductsDto> GetAsync(Guid id)
+        public  async Task<ProductDto> GetAsync(Guid id)
         {
             var product = await _productRepository.GetProduct(id);
             //var   product = query.
@@ -50,11 +50,11 @@ namespace InvoiceSystem.Products
             }
 
            
-            return ObjectMapper.Map<Product, ProductsDto>(product);
+            return ObjectMapper.Map<Product, ProductDto>(product);
             
         }
 
-        public async Task<PagedResultDto<ProductsDto>> GetListAsync(GetProductListDto input)
+        public async Task<PagedResultDto<ProductDto>> GetListAsync(GetProductListDto input)
         {
             if (input.Sorting == null)
             {
@@ -73,12 +73,12 @@ namespace InvoiceSystem.Products
     ? await _productRepository.CountAsync()
     : await _productRepository.CountAsync(
         p => p.Name == input.Filter);
-            return new PagedResultDto<ProductsDto>(totalCount, ObjectMapper.Map<List<Product>, List<ProductsDto>>(invoices));
+            return new PagedResultDto<ProductDto>(totalCount, ObjectMapper.Map<List<Product>, List<ProductDto>>(invoices));
 
 
         }
 
-        public async Task<ProductsDto> UpdateAsync(Guid id, UpdateProductDto input)
+        public async Task<ProductDto> UpdateAsync(Guid id, UpdateProductDto input)
         {
             var product = await _productRepository.GetAsync(id);
             if (product == null)
@@ -99,7 +99,7 @@ namespace InvoiceSystem.Products
                 product.PartNo = input.PartNo;
             }
             var insert = await _productRepository.UpdateAsync(product,autoSave : true);
-            return  ObjectMapper.Map<Product,ProductsDto>(insert);
+            return  ObjectMapper.Map<Product,ProductDto>(insert);
 
         }
     }
